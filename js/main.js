@@ -28,60 +28,84 @@
 const links = document.querySelectorAll('#main-nav a');
 const content = document.getElementById('content');
 const tableBody = document.querySelector('#table tbody');
+const thead = document.querySelector('#table thead');
 console.log(links);
 let teamName = '';
+let logo = '';
 let position = '';
 let matches = '';
 let goals = '';
 let points = '';
 
+console.log(thead)
 for(let link of links) {
     link.addEventListener('click', fetchData);
 }
 
 let selectedTeam = '';
 
-async function fetchData() {
+async function fetchData(e) {
+    e.preventDefault();
 
-    try {
-        const response = await fetch('https://app.sportdataapi.com/api/v1/soccer/standings?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec&season_id=1980');
-        const standingData = await response.json();
+    const theClickedLink = e.target;
+    console.log(theClickedLink);
+    const selection = theClickedLink.id;
+    
+    if(selection == 'standings') {
 
-        console.log(standingData.data.standings)
+        thead.innerHTML = `
+            <tr>
+                <th>Plats</th>
+                <th>Lag</th>
+                <th>Matcher</th>
+                <th>Mål +/-</th>
+                <th>Poäng</th>
+            </tr>
+        `;
 
-        for(let team of standingData.data.standings) {
-            selectedTeam = team.team_id;
-            console.log(selectedTeam);
-            position = standingData.data.standings.indexOf(team) + 1;
-            matches = team.overall.games_played;
-            goals = team.overall.goals_diff;
-            points = team.points;
+        try {
+            const response = await fetch('https://app.sportdataapi.com/api/v1/soccer/standings?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec&season_id=1980');
+            const standingData = await response.json();
+
+            console.log(standingData.data.standings)
+
             
-            await getTeamName();
-            console.log(team)
-            console.log(teamName)
-            tableBody.innerHTML += `
-                <tr>
-                    <td>${position}</td>
-                    <td>${teamName}</td>
-                    <td>${matches}</td>
-                    <td>${goals}</td>
-                    <td><strong>${points}</strong></td>
-                </tr>
-            `
-        }
 
-    }   catch(error) {
-            console.log(error);
-        }
+            for(let team of standingData.data.standings) {
+                selectedTeam = team.team_id;
+                console.log(selectedTeam);
+                position = standingData.data.standings.indexOf(team) + 1;
+                matches = team.overall.games_played;
+                goals = team.overall.goals_diff;
+                points = team.points;
+                
+                await getTeamInfo();
+                console.log(team)
+                console.log(teamName)
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${position}</td>
+                        <td><img src="${logo}">${teamName}</td>
+                        <td>${matches}</td>
+                        <td>${goals}</td>
+                        <td><strong>${points}</strong></td>
+                    </tr>
+                `;
+            }
+
+        }   catch(error) {
+                console.log(error);
+            }
+    }
 }
 
 // function that collect the teamname from team_id
-async function getTeamName () {
+async function getTeamInfo () {
     try {
         const teamresponse = await fetch('https://app.sportdataapi.com/api/v1/soccer/teams/' + selectedTeam + '?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec');
         const teamData = await teamresponse.json();
         teamName = teamData.data.name;
+        logo = teamData.data.logo;
         console.log(teamName);
 
     } catch(error) {

@@ -2,6 +2,12 @@ body {
     padding: 20px;
 }
 
+#container {
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+}
+
 header {
     text-align: center;
 }
@@ -18,5 +24,10 @@ table, th, td {
 }
 
 table {
+    margin: 30px auto;
     border-collapse: collapse;
+}
+
+.hide {
+    display: none;
 }
