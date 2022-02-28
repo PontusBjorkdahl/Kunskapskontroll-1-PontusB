@@ -4,30 +4,9 @@
 // Premier League season 21/22 --> season_id: 1980
 // Premier League standings (Array(20)) --> standings: [0-19]
 
-// Teams id:
-// Manchester City      team_id: 12400
-// Liverpool            team_id: 2509
-// Chelsea              team_id: 2524
-// Manchester United    team_id: 2523
-// Arsenal              team_id: 2522
-// West Ham             team_id: 12401
-// Wolverhampton        team_id: 850
-// Tottenham            team_id: 12295
-// Brighton             team_id: 2518
-// Southampton          team_id: 12423
-// Crystal Palace       team_id: 2515
-// Leicester            team_id: 12424
-// Aston Villa          team_id: 2520
-// Brentford            team_id: 2537
-// Leeds                team_id: 2546
-// Everton              team_id: 2516
-// Newcastle            team_id: 849
-// Burnley              team_id: 2513
-// Watford              team_id: 2517
-// Norwich              team_id: 2510
 const links = document.querySelectorAll('#main-nav a');
 const content = document.getElementById('content');
-const tableBody = document.querySelector('#table tbody');
+const tBody = document.querySelector('#table tbody');
 const thead = document.querySelector('#table thead');
 console.log(links);
 let teamName = '';
@@ -36,6 +15,9 @@ let position = '';
 let matches = '';
 let goals = '';
 let points = '';
+let standingsBool = false;
+let topScorersBool = false;
+let name = '';
 
 console.log(thead)
 for(let link of links) {
@@ -51,51 +33,95 @@ async function fetchData(e) {
     console.log(theClickedLink);
     const selection = theClickedLink.id;
     
-    if(selection == 'standings') {
+    // "standingsBool" to prevent the table to duplicate when "Tabell" is pressed more than one time
+    if(standingsBool == false) {
 
-        thead.innerHTML = `
-            <tr>
-                <th>Plats</th>
-                <th>Lag</th>
-                <th>Matcher</th>
-                <th>Mål +/-</th>
-                <th>Poäng</th>
-            </tr>
-        `;
+        
+        if(selection == 'standings') {
 
-        try {
-            const response = await fetch('https://app.sportdataapi.com/api/v1/soccer/standings?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec&season_id=1980');
-            const standingData = await response.json();
+            clearTable();
+            standingsBool = true;
+            topScorersBool = false;
+            thead.innerHTML = `
+                <tr>
+                    <th>Plats</th>
+                    <th>Lag</th>
+                    <th>Matcher</th>
+                    <th>Mål +/-</th>
+                    <th>Poäng</th>
+                </tr>
+            `;
 
-            console.log(standingData.data.standings)
+            try {
+                const standingResponse = await fetch('https://app.sportdataapi.com/api/v1/soccer/standings?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec&season_id=1980');
+                const standingData = await standingResponse.json();
 
-            
+                console.log(standingData.data.standings)
 
-            for(let team of standingData.data.standings) {
-                selectedTeam = team.team_id;
-                console.log(selectedTeam);
-                position = standingData.data.standings.indexOf(team) + 1;
-                matches = team.overall.games_played;
-                goals = team.overall.goals_diff;
-                points = team.points;
                 
-                await getTeamInfo();
-                console.log(team)
-                console.log(teamName)
-                tableBody.innerHTML += `
-                    <tr>
-                        <td>${position}</td>
-                        <td><img src="${logo}">${teamName}</td>
-                        <td>${matches}</td>
-                        <td>${goals}</td>
-                        <td><strong>${points}</strong></td>
-                    </tr>
-                `;
-            }
 
-        }   catch(error) {
+                for(let team of standingData.data.standings) {
+                    selectedTeam = team.team_id;
+                    console.log(selectedTeam);
+                    position = standingData.data.standings.indexOf(team) + 1;
+                    matches = team.overall.games_played;
+                    goals = team.overall.goals_diff;
+                    points = team.points;
+                    
+                    await getTeamInfo();
+                    console.log(team)
+                    console.log(teamName)
+                    tBody.innerHTML += `
+                        <tr>
+                            <td><strong>${position}</strong></td>
+                            <td id="team-name"><img src="${logo}" id="team-logo">${teamName}</td>
+                            <td>${matches}</td>
+                            <td>${goals}</td>
+                            <td><strong>${points}</strong></td>
+                        </tr>
+                    `;
+                }
+
+            }   catch(error) {
+                    console.log(error);
+                }
+        }
+    }
+    // "topScorersBool" to prevent the table to duplicate when "Skytteliga" is pressed more than one time
+    if(topScorersBool == false) {
+        if(selection == 'top-scorers') {
+            clearTable();
+            topScorersBool = true;
+            standingsBool = false;
+
+            try {
+                const topScorersResponse = await fetch('https://app.sportdataapi.com/api/v1/soccer/topscorers?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec&season_id=1980');
+                const topscorersData = await topScorersResponse.json();
+                console.log(topscorersData);
+
+                let counter = 0; 
+                for(let players of topscorersData.data) {
+                    console.log(players.player.player_name)
+
+                    position = topscorersData.data.indexOf(players) + 1;
+                    name = players.player.player_name;
+                    tBody.innerHTML += `
+                    <tr>
+                        <td><strong>${position}</strong></td>
+                        <td id="team-name"><img src="" id="team-logo">${name}</td>
+
+                    </tr>
+                    `
+                    counter++;
+                    if(counter == 30) {
+                        break;
+                    }
+                }
+        
+            } catch(error) {
                 console.log(error);
             }
+        }
     }
 }
 
@@ -115,3 +141,7 @@ async function getTeamInfo () {
     return teamName;
 }
 
+function clearTable () {
+    tBody.innerHTML = '';
+    thead.innerHTML = '';
+}
