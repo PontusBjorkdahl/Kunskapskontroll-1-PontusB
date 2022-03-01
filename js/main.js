@@ -22,101 +22,127 @@ let standingsBool = false;
 let topScorersBool = false;
 let name = '';
 
-console.log(thead)
-for(let link of links) {
-    link.addEventListener('click', fetchData);
-}
+
 
 let selectedTeam = '';
+
+linksEventListener ();
 
 async function fetchData(e) {
     e.preventDefault();
     theClickedLink = e.target;
+    console.log(selection);
+
     selection = theClickedLink.id;
     
     // "standingsBool" to prevent the table to duplicate when "Tabell" is pressed more than ones
-    if(standingsBool == false) {
+    
+    if(selection == 'standings') {
+        if(standingsBool == false) {
 
-        if(selection == 'standings') {
+            // prevents the user to start a new fetch while the current one is still loading
+            linksRemoveEventListener();
 
             clearTable();
             bool ();
             changeThead ();
-
-            try {
-                const standingResponse = await fetch('https://app.sportdataapi.com/api/v1/soccer/standings?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec&season_id=1980');
-                const standingData = await standingResponse.json();
-
-                console.log(standingData.data.standings)
-
-                
-
-                for(let team of standingData.data.standings) {
-                    selectedTeam = team.team_id;
-                    position = standingData.data.standings.indexOf(team) + 1;
-                    matches = team.overall.games_played;
-                    goals = team.overall.goals_diff;
-                    points = team.points;
-                    
-                    await getTeamInfo();
-                    tBody.innerHTML += `
-                        <tr>
-                            <td><strong>${position}</strong></td>
-                            <td id="team-name"><img src="${logo}" id="team-logo">${teamName}</td>
-                            <td>${matches}</td>
-                            <td>${goals}</td>
-                            <td><strong>${points}</strong></td>
-                        </tr>
-                    `;
-                }
-
-            }   catch(error) {
-                    console.log(error);
-                }
+            await getStandingsTable();
+            linksEventListener();
         }
     }
     // "topScorersBool" to prevent the table to duplicate when "Skytteliga" is pressed more than one time
-    if(topScorersBool == false) {
-        if(selection == 'top-scorers') {
+    else if(selection == 'top-scorers') {
+        if(topScorersBool == false) {
+            linksRemoveEventListener();
+            
             clearTable();
             bool ();
             changeThead ();
+            await getTopScorersTable ();
+            linksEventListener();
+        }
+    }
+}
 
-            try {
-                const topScorersResponse = await fetch('https://app.sportdataapi.com/api/v1/soccer/topscorers?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec&season_id=1980');
-                const topscorersData = await topScorersResponse.json();
-                console.log(topscorersData);
 
-                let counter = 0; 
-                for(let players of topscorersData.data) {
-                    position = topscorersData.data.indexOf(players) + 1;
-                    name = players.player.player_name;
-                    selectedTeam = players.team.team_id;
-                    goals = players.goals.overall;
-                    matches = players.matches_played;
+async function getStandingsTable() {
+    try {
+        const standingResponse = await fetch('https://app.sportdataapi.com/api/v1/soccer/standings?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec&season_id=1980');
+        const standingData = await standingResponse.json();
 
-                    await getTeamInfo()
-                    tBody.innerHTML += `
-                    <tr>
-                        <td><strong>${position}</strong></td>
-                        <td id="team-name"><img src="${logo}" id="team-logo">${name}</td>
-                        <td><strong>${matches}</strong></td>
-                        <td><strong>${goals}</strong></td>
+        console.log(standingData.data.standings)
 
-                    </tr>
-                    `
-                    counter++;
-                    if(counter == 20) {
-                        break;
-                    }
-                }
         
-            } 
+
+        for(let team of standingData.data.standings) {
+            selectedTeam = team.team_id;
+            position = standingData.data.standings.indexOf(team) + 1;
+            matches = team.overall.games_played;
+            goals = team.overall.goals_diff;
+            points = team.points;
             
-            catch(error) {
-                console.log(error);
+            await getTeamInfo();
+            tBody.innerHTML += `
+                <tr>
+                    <td><strong>${position}</strong></td>
+                    <td id="team-name"><img src="${logo}" id="team-logo">${teamName}</td>
+                    <td>${matches}</td>
+                    <td>${goals}</td>
+                    <td><strong>${points}</strong></td>
+                </tr>
+            `;
+        }
+
+    }   catch(error) {
+            console.log(error);
+        }
+}
+
+async function getTopScorersTable () {
+    try {
+        const topScorersResponse = await fetch('https://app.sportdataapi.com/api/v1/soccer/topscorers?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec&season_id=1980');
+        const topscorersData = await topScorersResponse.json();
+        console.log(topscorersData);
+
+        let counter = 0; 
+        for(let players of topscorersData.data) {
+            position = topscorersData.data.indexOf(players) + 1;
+            name = players.player.player_name;
+            selectedTeam = players.team.team_id;
+            goals = players.goals.overall;
+            matches = players.matches_played;
+
+            await getTeamInfo()
+            tBody.innerHTML += `
+            <tr>
+                <td><strong>${position}</strong></td>
+                <td id="team-name"><img src="${logo}" id="team-logo">${name}</td>
+                <td><strong>${matches}</strong></td>
+                <td><strong>${goals}</strong></td>
+
+            </tr>
+            `
+            counter++;
+            if(counter == 20) {
+                break;
             }
         }
+    } 
+    
+    catch(error) {
+        console.log(error);
+    }
+}
+
+function linksEventListener () {
+    for(let link of links) {
+        link.addEventListener('click', fetchData);
+    }
+}
+
+function linksRemoveEventListener () {
+    for(let link of links) {
+        link.removeEventListener('click', fetchData);
     }
 }
 

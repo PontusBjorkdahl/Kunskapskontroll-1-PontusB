@@ -2,13 +2,9 @@ html {
     background-image: linear-gradient(#3b1858, #f7277e);
     background-attachment: fixed;
 }
+
 body {
     padding: 20px;
-}
-
-a {
-    text-decoration: none;
-    color: #3b1858;
 }
 
 #container {
@@ -24,13 +20,46 @@ header {
     text-align: center;
 }
 
+nav {
+    background-color: #3b1858;
+    margin-top: 30px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    justify-content: space-around;
+}
+
 h1 {
-    display: inline-block;
-    margin-right: 20px;
+    margin: 15px 0;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+}
+
+#standings {
+    float: left;
+    width: 50%;
+    border: 2px solid #3b1858;
+}
+
+#top-scorers {
+    float: right;
+    width: 50%;
+    border: 2px solid #3b1858;
+}
+
+nav a:hover {
+    background-color: white;
+}
+
+nav a:hover h1 {
+    color: #3b1858;
 }
 
 table, th, td {
-    /* border: 1px solid; */
     padding: 10px;
 }
 
