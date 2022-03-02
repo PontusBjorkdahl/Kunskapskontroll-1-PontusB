@@ -31,7 +31,7 @@ async function fetchData(e) {
     
     // adds css to the selected link
     selectedLink();
- 
+    
     if(selection == 'standings') {
         // bool to prevent the table to duplicate when the same link is pressed more than ones
         if(standingsBool == false) {
