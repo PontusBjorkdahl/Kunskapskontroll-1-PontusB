@@ -1,0 +1,13 @@
+@media screen and (max-width: 960px) { 
+    .hide {
+        display: none;
+    }
+
+    #container {
+        width: 70%;
+    }
+
+    a {
+        font-size: 20px;
+    }
+}

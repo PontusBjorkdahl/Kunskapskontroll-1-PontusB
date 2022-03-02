@@ -1,0 +1,24 @@
+@media screen and (max-width: 767px) {
+    #container {
+        width: 100%;
+        margin: auto;
+        padding: 10px 5px;
+    }
+
+    body {
+        padding: 5px;
+    }
+
+    a {
+        font-size: 15px;
+    }
+
+    table th,
+    table td {
+        font-size: small;
+    }
+
+    .hide-mobile {
+        display: none;
+    }
+}

@@ -105,11 +105,11 @@ async function getStandingsTable() {
                     <tr id="qualifications-border">
                         <td><strong>${position}</strong></td>
                         <td id="team-name"><img src="${logo}" id="team-logo">${teamName}</td>
-                        <td>${matches}</td>
-                        <td>${goals}</td>
+                        <td class="hide-mobile">${matches}</td>
+                        <td class="hide">${goals}</td>
                         <td><strong>${points}</strong></td>
                     </tr>
-            `;
+                `;
             }
 
             else {
@@ -117,8 +117,8 @@ async function getStandingsTable() {
                     <tr>
                         <td><strong>${position}</strong></td>
                         <td id="team-name"><img src="${logo}" id="team-logo">${teamName}</td>
-                        <td>${matches}</td>
-                        <td>${goals}</td>
+                        <td class="hide-mobile">${matches}</td>
+                        <td class="hide">${goals}</td>
                         <td><strong>${points}</strong></td>
                     </tr>
                     `;
@@ -215,10 +215,10 @@ function changeThead () {
             <tr>
                 <th>Plats</th>
                 <th>Lag</th>
-                <th>Matcher</th>
-                <th>Mål +/-</th>
+                <th class="hide-mobile">Matcher</th>
+                <th class="hide">Mål+/-</th>
                 <th>Poäng</th>
-            </tr>
+            </tr> 
         `;
     }
 }
