@@ -31,7 +31,7 @@ async function fetchData(e) {
     
     // adds css to the selected link
     selectedLink();
-    
+
     if(selection == 'standings') {
         // bool to prevent the table to duplicate when the same link is pressed more than ones
         if(standingsBool == false) {
@@ -100,7 +100,7 @@ async function getStandingsTable() {
             await getTeamInfo();
             
 
-            if(counter == 3 || counter == 4) {
+            if(counter == 3 || counter == 4 || counter == 16) {
                 tBody.innerHTML += `
                     <tr id="qualifications-border">
                         <td><strong>${position}</strong></td>
