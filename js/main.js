@@ -31,11 +31,11 @@ async function fetchData(e) {
     
     // adds css to the selected link
     selectedLink();
-
+    
     if(selection == 'standings') {
         // bool to prevent the table to duplicate when the same link is pressed more than ones
         if(standingsBool == false) {
-
+            
             // prevents the user to start a new fetch while the current one is still loading
             linksRemoveEventListener();
 
@@ -43,10 +43,9 @@ async function fetchData(e) {
             bool ();
             changeThead ();
             await getStandingsTable();
-            linksEventListener();
         }
     }
-
+    
     else {
         if(topScorersBool == false) {
             linksRemoveEventListener(); 
@@ -54,9 +53,9 @@ async function fetchData(e) {
             bool ();
             changeThead ();
             await getTopScorersTable ();
-            linksEventListener();
         }
     }
+    linksEventListener();
 }
 
 
