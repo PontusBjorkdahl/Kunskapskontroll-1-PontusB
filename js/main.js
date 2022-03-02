@@ -9,7 +9,6 @@ const content = document.getElementById('content');
 const tBody = document.querySelector('#table tbody');
 const thead = document.querySelector('#table thead');
 
-console.log(links);
 let theClickedLink = '';
 let selection = '';
 let teamName = '';
@@ -21,9 +20,6 @@ let points = '';
 let standingsBool = false;
 let topScorersBool = false;
 let name = '';
-
-
-
 let selectedTeam = '';
 
 linksEventListener ();
@@ -31,13 +27,13 @@ linksEventListener ();
 async function fetchData(e) {
     e.preventDefault();
     theClickedLink = e.target;
-    console.log(selection);
-
     selection = theClickedLink.id;
     
-    // "standingsBool" to prevent the table to duplicate when "Tabell" is pressed more than ones
-    
+    // adds css to the selected link
+    selectedLink();
+ 
     if(selection == 'standings') {
+        // bool to prevent the table to duplicate when the same link is pressed more than ones
         if(standingsBool == false) {
 
             // prevents the user to start a new fetch while the current one is still loading
@@ -50,11 +46,10 @@ async function fetchData(e) {
             linksEventListener();
         }
     }
-    // "topScorersBool" to prevent the table to duplicate when "Skytteliga" is pressed more than one time
-    else if(selection == 'top-scorers') {
+
+    else {
         if(topScorersBool == false) {
-            linksRemoveEventListener();
-            
+            linksRemoveEventListener(); 
             clearTable();
             bool ();
             changeThead ();
@@ -65,15 +60,36 @@ async function fetchData(e) {
 }
 
 
+
+function linksEventListener () {
+    for(let link of links) {
+        link.addEventListener('click', fetchData);
+    }
+}
+
+function linksRemoveEventListener () {
+    for(let link of links) {
+        link.removeEventListener('click', fetchData);
+    }
+}
+
+function selectedLink () {
+    theClickedLink.classList.add('selectedLink');
+    if(selection == 'standings') {
+        document.getElementById('top-scorers').classList.remove('selectedLink');
+    }
+
+    else {
+        document.getElementById('standings').classList.remove('selectedLink');
+    }
+}
+
 async function getStandingsTable() {
     try {
         const standingResponse = await fetch('https://app.sportdataapi.com/api/v1/soccer/standings?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec&season_id=1980');
         const standingData = await standingResponse.json();
-
         console.log(standingData.data.standings)
-
-        
-
+        let counter = 0;
         for(let team of standingData.data.standings) {
             selectedTeam = team.team_id;
             position = standingData.data.standings.indexOf(team) + 1;
@@ -82,20 +98,39 @@ async function getStandingsTable() {
             points = team.points;
             
             await getTeamInfo();
-            tBody.innerHTML += `
-                <tr>
-                    <td><strong>${position}</strong></td>
-                    <td id="team-name"><img src="${logo}" id="team-logo">${teamName}</td>
-                    <td>${matches}</td>
-                    <td>${goals}</td>
-                    <td><strong>${points}</strong></td>
-                </tr>
+            
+
+            if(counter == 3 || counter == 4) {
+                tBody.innerHTML += `
+                    <tr id="qualifications-border">
+                        <td><strong>${position}</strong></td>
+                        <td id="team-name"><img src="${logo}" id="team-logo">${teamName}</td>
+                        <td>${matches}</td>
+                        <td>${goals}</td>
+                        <td><strong>${points}</strong></td>
+                    </tr>
             `;
+            }
+
+            else {
+                tBody.innerHTML += `
+                    <tr>
+                        <td><strong>${position}</strong></td>
+                        <td id="team-name"><img src="${logo}" id="team-logo">${teamName}</td>
+                        <td>${matches}</td>
+                        <td>${goals}</td>
+                        <td><strong>${points}</strong></td>
+                    </tr>
+                    `;
+            }
+            counter++;
         }
 
-    }   catch(error) {
-            console.log(error);
-        }
+    }   
+    
+    catch(error) {
+        console.log(error);
+    }
 }
 
 async function getTopScorersTable () {
@@ -119,34 +154,20 @@ async function getTopScorersTable () {
                 <td id="team-name"><img src="${logo}" id="team-logo">${name}</td>
                 <td><strong>${matches}</strong></td>
                 <td><strong>${goals}</strong></td>
-
             </tr>
             `
             counter++;
-            if(counter == 20) {
+            if (counter == 20) {
                 break;
             }
         }
-    } 
-    
+    }
+
     catch(error) {
         console.log(error);
     }
 }
 
-function linksEventListener () {
-    for(let link of links) {
-        link.addEventListener('click', fetchData);
-    }
-}
-
-function linksRemoveEventListener () {
-    for(let link of links) {
-        link.removeEventListener('click', fetchData);
-    }
-}
-
-// function that collect the teamname from team_id
 async function getTeamInfo () {
     try {
         const teamresponse = await fetch('https://app.sportdataapi.com/api/v1/soccer/teams/' + selectedTeam + '?apikey=c5d49f30-9655-11ec-8a62-699f157b1fec');
@@ -154,7 +175,7 @@ async function getTeamInfo () {
         teamName = teamData.data.name;
         logo = teamData.data.logo;
     } 
-    
+
     catch(error) {
         console.log(error);
     }

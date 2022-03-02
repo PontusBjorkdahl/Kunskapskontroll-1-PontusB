@@ -1,5 +1,14 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --color:#3b1858;
+    --font: sans-serif;
+}
+
 html {
-    background-image: linear-gradient(#3b1858, #f7277e);
+    background-image: linear-gradient(var(--color), #f7277e);
     background-attachment: fixed;
 }
 
@@ -21,7 +30,9 @@ header {
 }
 
 nav {
-    background-color: #3b1858;
+    background-color: var(--color);
+    width: 80%;
+    margin: 0 auto;
     margin-top: 30px;
     border-radius: 5px;
     display: flex;
@@ -37,26 +48,27 @@ a {
     text-decoration: none;
     color: white;
     border-radius: 5px;
+    padding: 5px;
+    font-size: 25px;
+    font-family: var(--font);
 }
 
 #standings {
     float: left;
     width: 50%;
-    border: 2px solid #3b1858;
+    border: 2px solid var(--color);
 }
 
 #top-scorers {
     float: right;
     width: 50%;
-    border: 2px solid #3b1858;
+    border: 2px solid var(--color);
 }
 
-nav a:hover {
+nav a:hover ,
+.selectedLink {
     background-color: white;
-}
-
-nav a:hover h1 {
-    color: #3b1858;
+    color: var(--color);
 }
 
 table, th, td {
@@ -67,9 +79,19 @@ tr {
     border-bottom: 0.5px solid;
 }
 
+h4 {
+    margin-top: -10px;
+    background-color: white;
+}
+
+#qualifications-border {
+    border-bottom: 2px solid;
+}
+
 table {
     margin: 30px auto;
     border-collapse: collapse;
+    font-family: var(--font);
 }
 
 #team-logo {
